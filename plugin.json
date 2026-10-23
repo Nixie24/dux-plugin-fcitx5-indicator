@@ -2,7 +2,7 @@
     "id": "fcitx5Indicator",
     "name": "Fcitx5 Indicator",
     "description": "Shows the active Fcitx5 input method as a Material language icon in DankBar",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "license": "MIT",
     "author": "Nixie24",
     "icon": "language",
