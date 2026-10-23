@@ -1,0 +1,9 @@
+{
+    "fcitx5Indicator": {
+        "Missing fcitx5-remote or busctl": "找不到 fcitx5-remote 或 busctl",
+        "This plugin reads the input method state through fcitx5-remote and busctl.\n\nInstall fcitx5 (which provides fcitx5-remote) and systemd (which provides busctl), make sure they are on PATH, then enable the plugin again.": "本插件通过 fcitx5-remote 和 busctl 读取输入法状态。\n\n请安装 fcitx5（含 fcitx5-remote）和 systemd（含 busctl），确认它们在 PATH 上，然后重新启用插件。",
+        "Fcitx5 Indicator": "Fcitx5 指示器",
+        "Icon size": "图标大小",
+        "Scale the language icon relative to the bar's default icon size.": "相对于状态栏默认图标大小缩放语言图标。"
+    }
+}

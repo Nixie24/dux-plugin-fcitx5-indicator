@@ -1,0 +1,9 @@
+{
+    "fcitx5Indicator": {
+        "Missing fcitx5-remote or busctl": "Missing fcitx5-remote or busctl",
+        "This plugin reads the input method state through fcitx5-remote and busctl.\n\nInstall fcitx5 (which provides fcitx5-remote) and systemd (which provides busctl), make sure they are on PATH, then enable the plugin again.": "This plugin reads the input method state through fcitx5-remote and busctl.\n\nInstall fcitx5 (which provides fcitx5-remote) and systemd (which provides busctl), make sure they are on PATH, then enable the plugin again.",
+        "Fcitx5 Indicator": "Fcitx5 Indicator",
+        "Icon size": "Icon size",
+        "Scale the language icon relative to the bar's default icon size.": "Scale the language icon relative to the bar's default icon size."
+    }
+}
