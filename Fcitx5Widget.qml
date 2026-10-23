@@ -128,7 +128,7 @@ PluginComponent {
     // polling only runs while the bar is visible and stops after 10 failed
     // polls, so a stopped fcitx5 does not keep spawning processes.
     Timer {
-        interval: root.fcitxRunning && root.trayItem ? 10000 : 3000
+        interval: root.fcitxRunning ? 10000 : 3000
         running: root.conditionVisible && root._barRevealed && !root.pollingStopped
         repeat: true
         triggeredOnStart: true
