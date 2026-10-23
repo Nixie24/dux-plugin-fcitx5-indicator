@@ -21,16 +21,15 @@ PluginComponent {
         return Math.max(0.5, Math.min(2.0, percent / 100));
     }
 
-    // Hide the whole widget when fcitx5 is not running (exit 0 = visible).
-    visibilityCommand: "fcitx5-remote --check"
-    visibilityInterval: 10
-
-    // 0 = fcitx exited, 1 = inactive, 2 = active
+    // 0 = input method closed, 1 = inactive, 2 = active.
     property int fcitxState: 1
+    property bool fcitxRunning: true
+    property int failedPolls: 0
+    property bool pollingStopped: false
     property string imUnique: ""
     property string imLang: ""
 
-    readonly property bool active: fcitxState === 2
+    readonly property bool active: fcitxRunning && fcitxState === 2
     readonly property color stateColor: active ? Theme.primary : Theme.surfaceVariantText
     readonly property int glyphSize: Theme.barIconSize(barThickness, -4, barConfig?.maximizeWidgetIcons, (barConfig?.iconScale ?? 1.0) * iconScale)
 
@@ -67,6 +66,9 @@ PluginComponent {
         })
 
     readonly property string iconName: {
+        if (!fcitxRunning)
+            return "language";
+
         const unique = (imUnique || "").toLowerCase();
         const lang = (imLang || "").toLowerCase().split(/[-_]/)[0];
 
@@ -122,17 +124,12 @@ PluginComponent {
         }
     }
 
-    // Retry until the tray item registers
+    // Fallback for missed tray signals. The connections above drive updates;
+    // polling only runs while the bar is visible and stops after 10 failed
+    // polls, so a stopped fcitx5 does not keep spawning processes.
     Timer {
-        interval: 1000
-        repeat: true
-        running: root.trayItem === null
-        onTriggered: root.bindTrayItem()
-    }
-
-    Timer {
-        interval: root.trayItem ? 3000 : 1000
-        running: true
+        interval: root.fcitxRunning && root.trayItem ? 10000 : 3000
+        running: root.conditionVisible && root._barRevealed && !root.pollingStopped
         repeat: true
         triggeredOnStart: true
         onTriggered: root.poll()
@@ -147,13 +144,23 @@ PluginComponent {
     }
 
     function applyState(stdout, exitCode) {
-        if (exitCode !== 0 || !stdout) {
-            root.fcitxState = 0;
+        const state = parseInt((stdout || "").trim());
+        if (exitCode !== 0 || !stdout || isNaN(state)) {
+            markUnavailable();
             return;
         }
-        const state = parseInt(stdout.trim());
-        if (!isNaN(state))
-            root.fcitxState = state;
+        root.fcitxRunning = true;
+        root.fcitxState = state;
+        root.failedPolls = 0;
+        root.pollingStopped = false;
+    }
+
+    function markUnavailable() {
+        root.fcitxRunning = false;
+        root.fcitxState = 0;
+        root.failedPolls++;
+        if (root.failedPolls >= 10)
+            root.pollingStopped = true;
     }
 
     function applyInputMethod(stdout, exitCode) {
@@ -175,7 +182,15 @@ PluginComponent {
         Proc.runCommand("fcitx5Indicator.toggle", ["fcitx5-remote", "-t"], () => root.poll(), 40, 3000, root);
     }
 
-    pillClickAction: () => root.toggleActive()
+    function retry() {
+        root.failedPolls = 0;
+        if (root.pollingStopped)
+            root.pollingStopped = false;
+        else
+            root.poll();
+    }
+
+    pillClickAction: () => root.fcitxRunning ? root.toggleActive() : root.retry()
 
     property Component indicatorPill: Component {
         DIcon {

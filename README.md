@@ -31,6 +31,8 @@ Then:
 
 The widget polls `fcitx5-remote` for the active/inactive state and `org.fcitx.Fcitx.Controller1.CurrentInputMethodInfo` for the current input method's unique name and language code.
 
+Updates normally arrive through Fcitx's tray item ( `NewIcon` / `NewToolTip` ), so switching input methods is immediate. A slow fallback poll (10 s while fcitx5 is running with the tray item, 3 s otherwise) covers missed signals. After 10 consecutive failures — for example when fcitx5 is not running — polling stops and the widget shows `language` ; click it to retry detection. While fcitx5 is running, click toggles the input method with `fcitx5-remote -t` .
+
 ### Icon mapping
 
 | Detected | Icon |
@@ -52,6 +54,7 @@ The widget polls `fcitx5-remote` for the active/inactive state and `org.fcitx.Fc
 | Japanese | `language_japanese_kana` |
 | Korean | `language_korean_latin` |
 | Any other known language | `language_international` |
+| fcitx5 not running | `language` |
 | Unknown / empty | `language` |
 
 ## Settings
